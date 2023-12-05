@@ -1,7 +1,6 @@
 import requests
-import json     
+    
 
-key='4637ff343034453eb74214224230512'
 url='http://api.weatherapi.com/v1/current.json?'
 location='Stockholm'
 aqi='yes'
@@ -9,9 +8,10 @@ aqi='yes'
 api_url = "{}key={}&q={}&aqi={}".format(url, key, location, aqi)
 response = requests.get(api_url)
 
+#import json 
 #used for logging
-result = json.dumps(response.json(), indent=2)
-print(result)
+#result = json.dumps(response.json(), indent=2)
+#print(result)
 
 #weather data
 #print(data['current']['temp_c'])
