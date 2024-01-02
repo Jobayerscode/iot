@@ -56,11 +56,11 @@ def carbonLimit(carbon):
     return carbon < 4000
 
 #UK AQI
-ozoneRange = [33, 66, 100, 120, 140, 160, 187, 213, 240]
-nitrogenRange = [67, 134, 200, 267, 334, 400, 467, 534, 600]
-sulphurRange = [88, 177, 266, 354, 443, 532, 710, 887, 1064]
-pm2Range = [11, 23, 35, 41, 47, 53, 58, 64, 70]
-pm10Range = [16, 33, 50, 58, 66, 75, 83, 91, 100]
+ozoneRange = 	[33,	66, 	100, 	120, 	140, 	160, 	187, 	213, 	240 ]
+nitrogenRange = [67,	134, 	200, 	267, 	334, 	400, 	467, 	534, 	600 ]
+sulphurRange = 	[88,	177, 	266, 	354, 	443, 	532, 	710, 	887, 	1064]
+pm2Range = 		[11, 	23, 	35, 	41, 	47, 	53, 	58, 	64, 	70  ]
+pm10Range = 	[16, 	33, 	50, 	58, 	66, 	75, 	83, 	91, 	100 ]
 
 
 def getAQIrange(value, range):
@@ -99,41 +99,46 @@ def getAQImax(ozone, nitrogen, sulphur, small, large, ozoneRange, nitrogenRange,
 def openWindow(wind, rain, condition, humidityOutdoor, humidityIndoor, tempOutdoor, tempIndoor, aqiOutdoor, aqiIndoor):
     winMultplier = 100
 
-    if aqiOutdoor > aqiIndoor:
-        return winMultplier = 0
-
     if wind > 14:
-        return winMultplier = 0
+        return 0
 
     if tempIndoor < 18:
-        return winMultplier = 0
+        return 0
 
     if condition > 1200:
-        winMultplier = 0
-    elif condition > 1100:
-        winMultplier = 20
-    else
-        if rain > 6:
-           winMultplier = 5
-        elif humidityIndoor < 50 and humidityOutdoor > humidityIndoor:
-            winMultplier = 15
-        else
-            if tempIndoor > tempOutdoor:
-                winMultplier = 100
-            else
-                winMultplier = 50
+        return 0
     
+    if aqiOutdoor > aqiIndoor:
+        return 0
 
+    if condition > 1100:
+        winMultplier = winMultplier - 50
+    else:
+
+        if rain > 6:
+           winMultplier = winMultplier - 30
+
+        elif humidityIndoor < 30:
+                winMultplier = winMultplier - 5
+
+                if tempIndoor > tempOutdoor:
+                    winMultplier = winMultplier - 5
+                else:
+                    winMultplier = winMultplier + 5
+
+        else:
+            return 100
+
+    
     return winMultplier
    
 
-
-
 temp, wind, rain, humidity, condition, carbon, nitrogen, ozone, sulphur, small, large, aqiIndoor =  getOutDoorDetails()
 
-openWindow(wind, rain, condition, humidityOutdoor, humidityIndoor, tempOutdoor, tempIndoor, aqiOutdoor, aqiIndoor)
+#openWindow(wind, rain, condition, humidityOutdoor, humidityIndoor, tempOutdoor, tempIndoor, aqiOutdoor, aqiIndoor)
 
 #print(getScoreWHO(carbon, nitrogen, ozone, sulphur, small, large))
 
 #print(getAQImax(ozone, nitrogen, sulphur, small, large, ozoneRange, nitrogenRange, sulphurRange, pm2Range, pm10Range))
 
+#print(openWindow(wind=5, rain=4, condition=1150, humidityOutdoor=30, humidityIndoor=50, tempOutdoor=5, tempIndoor=20, aqiOutdoor=1, aqiIndoor=2))
