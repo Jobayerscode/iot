@@ -14,15 +14,43 @@ import paho.mqtt.publish as publish
 broker = "test.mosquitto.org"	# Broker 
 
 pub_topic = "multi/window"      # send messages to this topic
+sub_topic = "device/window"     # get messages from this topic
 
 ############### MQTT section ##################
 
-# when connecting to mqtt do this;
+# Mqtt client
+
+# Callback when the client connects to the MQTT broker
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    # Subscribe to the topic you are interested in
+    client.subscribe("device/window")
+
+# Callback when a message is received from the MQTT broker
+def on_message(client, userdata, msg):
+    print(f"Received message: {msg.payload.decode()} on topic {msg.topic}")
+    
+
+# Create an MQTT client instance
+client = mqtt.Client()
+
+# Set the callbacks
+client.on_connect = on_connect
+client.on_message = on_message
+
+# Connect to the MQTT broker (replace 'broker_address' with the actual address of your MQTT broker)
+client.connect("test.mosquitto.org", 1883, 60)
+
+# Loop to maintain the connection and process incoming messages
+client.loop_forever()
+
+# Mqtt Server;
 def on_connect(client, userdata, flags, rc):
 	if rc==0:
 		print("Connection established. Code: "+str(rc))
 	else:
 		print("Connection failed. Code: " + str(rc))
+	client.subc
 		
 def on_publish(client, userdata, mid):
     print("Published: " + str(mid))
@@ -48,9 +76,8 @@ print("Attempting to connect to broker " + broker)
 client.connect(broker)	# Broker address, port and keepalive (maximum period in seconds allowed between communications with the broker)
 client.loop_start()
 
-# Loop that publishes message
-while True:
-      for count, value in enumerate(simulatedData):
+def dataParser():
+    for count, value in enumerate(simulatedData):
 		# Here, call the correct function from the sensor section depending on sensor
             data_to_send = openWindow(value["wind"],
                                     value["rain"], 
@@ -62,5 +89,8 @@ while True:
                                     value["aqiOutdoor"], 
                                     value["aqiIndoor"])
             client.publish(pub_topic, str(data_to_send))
-            time.sleep(2.0)	# Set delay
-			
+            time.sleep(10.0)	# Set delay
+
+# Loop that publishes message
+while True:
+    dataParser()
