@@ -85,7 +85,12 @@ def getAQIrange(value, range):
     else:
         return 10
 
-def getAQImax(ozone, nitrogen, sulphur, small, large, ozoneRange, nitrogenRange, sulphurRange, pm2Range, pm10Range):
+def getAQI(ozone, nitrogen, sulphur, small, large, 
+           ozoneRange=ozoneRange, 
+           nitrogenRange=nitrogenRange, 
+           sulphurRange=sulphurRange, 
+           pm2Range=pm2Range, 
+           pm10Range=pm10Range):
     return max(getAQIrange(ozone,ozoneRange),
                 getAQIrange(nitrogen, nitrogenRange),
                 getAQIrange(sulphur, sulphurRange),
@@ -112,19 +117,26 @@ def openWindow(wind, rain, condition, humidityOutdoor, humidityIndoor, tempOutdo
         return 0
 
     if condition > 1100:
-        winMultplier = winMultplier - 50
+        winMultplier = winMultplier - 75
     else:
 
         if rain > 6:
-           winMultplier = winMultplier - 30
+           winMultplier = winMultplier - 70
 
         elif humidityIndoor < 30:
-                winMultplier = winMultplier - 5
+                winMultplier = winMultplier - 65
 
                 if tempIndoor > tempOutdoor:
                     winMultplier = winMultplier - 5
                 else:
-                    winMultplier = winMultplier + 5
+                    winMultplier = winMultplier + 15
+
+        elif humidityIndoor < humidityOutdoor:
+                
+                if tempIndoor > tempOutdoor:
+                    winMultplier = winMultplier + 25
+                else:
+                    winMultplier = winMultplier - 10
 
         else:
             return 100
@@ -139,6 +151,22 @@ temp, wind, rain, humidity, condition, carbon, nitrogen, ozone, sulphur, small, 
 
 #print(getScoreWHO(carbon, nitrogen, ozone, sulphur, small, large))
 
-#print(getAQImax(ozone, nitrogen, sulphur, small, large, ozoneRange, nitrogenRange, sulphurRange, pm2Range, pm10Range))
+#print(getAQI(ozone=1, nitrogen=1, sulphur=1, small=1, large=1))
 
 #print(openWindow(wind=5, rain=4, condition=1150, humidityOutdoor=30, humidityIndoor=50, tempOutdoor=5, tempIndoor=20, aqiOutdoor=1, aqiIndoor=2))
+
+from data import outData, simulatedData
+import random, time
+
+for count, value in enumerate(simulatedData):
+		# Here, call the correct function from the sensor section depending on sensor
+            data_to_send = openWindow(value["wind"],
+                                    value["rain"], 
+                                    value["condition"], 
+                                    value["humidityOutdoor"],
+                                    value["humidityIndoor"],
+                                    value["tempOutdoor"],
+                                    value["tempIndoor"],
+                                    value["aqiOutdoor"], 
+                                    value["aqiIndoor"])
+            print(data_to_send)

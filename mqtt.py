@@ -2,7 +2,7 @@ import time
 import random
 import threading
 import paho.mqtt.client as mqtt
-from pi import openWindow, getAQImax
+from pi import openWindow, getAQI
 from data import outData, simulatedData
 
 task_running = False # Variable to track the state of the task
@@ -16,6 +16,8 @@ def run_task(client, pub_topic, simulatedData):
     while task_running:
         print("Task is running...")
         index = random.randint(0, len(simulatedData) - 1)
+        jindex = random.randint(0, len(outData) - 1)
+        kindex = random.randint(0, len(outData) - 1)
         data_to_send = openWindow(simulatedData[index]["wind"],
                                     simulatedData[index]["rain"], 
                                     simulatedData[index]["condition"], 
@@ -23,8 +25,16 @@ def run_task(client, pub_topic, simulatedData):
                                     simulatedData[index]["humidityIndoor"],
                                     simulatedData[index]["tempOutdoor"],
                                     simulatedData[index]["tempIndoor"],
-                                    simulatedData[index]["aqiOutdoor"], 
-                                    simulatedData[index]["aqiIndoor"])
+                                    getAQI(ozone=outData[jindex]["ozone"],
+                                            nitrogen=outData[jindex]["nitrogen"], 
+                                            sulphur=outData[jindex]["sulphur"], 
+                                            small=outData[jindex]["small"], 
+                                            large=outData[jindex]["large"]),
+                                    getAQI(ozone=outData[kindex]["ozone"],
+                                            nitrogen=outData[kindex]["nitrogen"], 
+                                            sulphur=outData[kindex]["sulphur"], 
+                                            small=outData[kindex]["small"], 
+                                            large=outData[kindex]["large"]))
         
         client.publish(pub_topic, data_to_send)
         print(f"Published data: {data_to_send} to {pub_topic}")
